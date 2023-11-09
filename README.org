@@ -1,0 +1,26 @@
+* system-environment                                                  :TOC_4:
+  - [[#introduction][Introduction]]
+
+** Introduction
+This package helps making environment variables defined outside of Emacs available inside. Quite often some system component - like a shell, or systemd user session - is configured with
+correct environment variables, but the launcher does not have a complete set, resulting in Emacs inheriting a bad copy.
+
+Example for Linux with systemd user session, exporting everything but the variables listed here:
+#+BEGIN_SRC emacs-lisp
+  (system-environment-import-from-command "systemctl --user show-environment"
+                                          '("DISPLAY" "HOME" "LOGNAME" "USER") t)))
+#+END_SRC
+
+Example for Windows, importing only the variables listed here:
+#+BEGIN_SRC emacs-lisp
+  (system-environment-import-from-async-command
+   "powershell -Command Get-ChildItem Env:|Foreach-Object {'{0}={1}' -f $_.Key,$_.Value }"
+   '("GIT_SSH" "HOMEDRIVE" "HOMEPATH" "GOPATH" "PATH" "SSH_AUTH_SOCK"))
+#+END_SRC
+
+Example for MacOS (or any other system with zsh), importing only the two variables listed:
+#+BEGIN_SRC emacs-lisp
+  (system-environment-import-from-command "zsh -i -c env" '("PATH" "SSH_AUTH_SOCK") nil nil t)
+#+END_SRC
+
+For more detailed information consult the function documentation.
