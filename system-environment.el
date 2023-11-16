@@ -44,10 +44,10 @@ Import PATH and SSH_AUTH_SOCK from zsh with verbose logging:
         (set-buffer (get-buffer-create buffer-name))
         (shell-command command
                        buffer-name
-                       "*Messages*")
+                       "*environment-import-stderr*")
         (system-environment-import-from-buffer "*environment-import*" variable-names is-blacklist verbose)
         (run-hooks 'system-environment-import-hook)
-        (when (not keep-buffer) (kill-buffer buffer-name)))
+        (when (not keep-buffer) (kill-buffer buffer-name) (kill-buffer "*environment-import-stderr*")))
     (message (concat "Not importing environment, command not found: " command))))
 
 (defun system-environment-import-from-async-command(command &optional variable-names is-blacklist keep-buffer verbose buffer)
@@ -70,9 +70,9 @@ specified to make sure both calls dump into unique buffers.
 (system-environment-import-from-async-command
  \"powershell -Command Get-ChildItem Env:|Foreach-Object {'{0}={1}' -f $_.Key,$_.Value }\")
 "
-  (if (executable-find (car (split-string command)))
+  (if (executable-find (if (listp command) (car command) (car (split-string command))))
       (let ((buffer-name (or buffer "*environment-import*"))
-            (command-list (split-string command)))
+            (command-list (if (listp command) command (split-string command))))
         (push buffer-name command-list)
         (push (nth 1 command-list) command-list)
         (set-buffer (get-buffer-create buffer-name))
