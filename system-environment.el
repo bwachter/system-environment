@@ -16,7 +16,7 @@ it to the import functions:
 
 (add-hook 'system-environment-import-hook 'system-environment-update-exec-path)
 (add-hook 'system-environment-import-async-hook 'system-environment-update-exec-path)"
-  (setq exec-path (remove-duplicates
+  (setq exec-path (cl-remove-duplicates
                    (nconc exec-path (split-string (getenv "PATH") ":"))
                    :test 'string=)))
 
