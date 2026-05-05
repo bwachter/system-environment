@@ -7,7 +7,7 @@ correct environment variables, but the launcher does not have a complete set, re
 
 Example for Linux with systemd user session, exporting everything but the variables listed here:
 #+BEGIN_SRC emacs-lisp
-  (system-environment-import-from-command "systemctl --user show-environment"
+  (system-environment-import-from-command "systemctl --no-pager --user show-environment"
                                           '("DISPLAY" "HOME" "LOGNAME" "USER") t)))
 #+END_SRC
 
